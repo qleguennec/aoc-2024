@@ -14,3 +14,7 @@ devenv.local.nix
 aoc2024
 
 .env
+guess
+
+puzzle.md
+input

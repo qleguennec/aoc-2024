@@ -18,6 +18,9 @@ main = do
     Left err -> print err
     Right r -> print $ run r
       where
-        run = length . filter (((||) <$> all increasing <*> all decreasing) . ap (zipWith (-)) tail)
-        increasing x = x >= 1 && x <= 3
-        decreasing = increasing . negate
+        run = length . filter (ap (liftA2 (||)) (. reverse) $ safe [])
+        safe seen (x : y : xs)
+          | increasing (y - x) = safe (seen ++ [x]) (y : xs)
+          | otherwise = liftA2 (||) ($ x) ($ y) $ all increasing . pad (flip (-)) . (seen ++) . (: xs)
+        safe _ _ = True
+        increasing = (&&) <$> (>= 1) <*> (<= 3)

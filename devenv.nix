@@ -8,7 +8,7 @@
 
 {
   env.AOC_DAY = "2";
-  env.AOC_PART = "1";
+  env.AOC_PART = "2";
 
   packages = with pkgs; [
     git
@@ -35,16 +35,24 @@
   };
 
   tasks = {
+    "aoc2024:download".exec = "aoc download --day $AOC_DAY --overwrite";
     "aoc2024:compile".exec = "ghc -isrc/ src/Main.hs -o ./aoc2024";
+    "aoc2024:guess" = {
+      exec = "./aoc2024 > guess";
+      after = [
+        "aoc2024:download"
+        "aoc2024:compile"
+      ];
+    };
     "aoc2024:submit" = {
       exec = ''
-        GUESS=$(./aoc2024)
+        GUESS=$(cat guess)
         echo "Day $AOC_DAY Part $AOC_PART Guess $GUESS"
         SUBMIT_LOG=$(aoc submit -d $AOC_DAY $AOC_PART $GUESS)
         echo $SUBMIT_LOG
         echo $SUBMIT_LOG | grep -q "That's the right answer!"
       '';
-      after = [ "aoc2024:compile" ];
+      after = [ "aoc2024:guess" ];
     };
     "aoc2024:all" = {
       exec = "git add . && git commit -m \"Day $AOC_DAY part $AOC_PART\"";
