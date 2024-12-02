@@ -8,6 +8,7 @@
 
 {
   env.AOC_DAY = "1";
+  env.AOC_PART = "2";
 
   packages = with pkgs; [
     git
@@ -16,7 +17,12 @@
     ghcid
     ormolu
 
-    (ghc.withPackages (p: with p; [ parsec ]))
+    (ghc.withPackages (
+      p: with p; [
+        parsec
+        containers
+      ]
+    ))
   ];
 
   dotenv.enable = true;
@@ -30,13 +36,19 @@
 
   tasks = {
     "aoc2024:compile".exec = "ghc -isrc/ src/Main.hs -o ./aoc2024";
-    "aoc2024:submit-part-1" = {
-      exec = "aoc submit 1 $(./aoc2024) --day $AOC_DAY";
+    "aoc2024:submit" = {
+      exec = ''
+        GUESS=$(./aoc2024)
+        echo "Guess:" $GUESS
+        RESPONSE=$(aoc submit -d $AOC_DAY $AOC_PART $GUESS)
+        echo $RESPONSE
+        echo $REPONSE | grep -q "That's the right answer!"
+      '';
       after = [ "aoc2024:compile" ];
     };
-    "aoc2024:part-1" = {
-      exec = "git add . && git commit -m \"Day $AOC_DAY part 1\"";
-      after = [ "aoc2024:submit-part-1" ];
+    "aoc2024:all" = {
+      exec = "git add . && git commit -m \"Day $AOC_DAY part $AOC_PART\"";
+      after = [ "aoc2024:submit" ];
     };
   };
 }

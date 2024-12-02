@@ -1,2 +1,2 @@
-:set -Wno-unused-do-bind
+:set -Wno-unused-do-bind -Wno-unused-imports
 :set -isrc
