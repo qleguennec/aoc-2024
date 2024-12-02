@@ -1,0 +1,16 @@
+.devenv
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+*.o
+*.hi
+aoc2024
+
+.env
