@@ -8,8 +8,8 @@ import Data.Maybe
 import Lib
 import Text.Parsec
 
-parser :: Parsec String Int [(Int, Int)]
-parser = sepEndBy1 (liftA2 (,) (digits' <* spaces') digits') newline
+parser :: Parsec String Int [[Int]]
+parser = sepEndBy1 (sepBy1 digits' spaces') newline
 
 main :: IO ()
 main = do
@@ -18,4 +18,6 @@ main = do
     Left err -> print err
     Right r -> print $ run r
       where
-        run = (sum .) . map . ap (*) <$> ((fromMaybe 0 <$>) . flip M.lookup . freqs . map snd) <*> map fst
+        run = length . filter (((||) <$> all increasing <*> all decreasing) . ap (zipWith (-)) tail)
+        increasing x = x >= 1 && x <= 3
+        decreasing = increasing . negate

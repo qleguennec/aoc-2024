@@ -7,8 +7,8 @@
 }:
 
 {
-  env.AOC_DAY = "1";
-  env.AOC_PART = "2";
+  env.AOC_DAY = "2";
+  env.AOC_PART = "1";
 
   packages = with pkgs; [
     git
@@ -39,10 +39,10 @@
     "aoc2024:submit" = {
       exec = ''
         GUESS=$(./aoc2024)
-        echo "Guess:" $GUESS
-        RESPONSE=$(aoc submit -d $AOC_DAY $AOC_PART $GUESS)
-        echo $RESPONSE
-        echo $REPONSE | grep -q "That's the right answer!"
+        echo "Day $AOC_DAY Part $AOC_PART Guess $GUESS"
+        SUBMIT_LOG=$(aoc submit -d $AOC_DAY $AOC_PART $GUESS)
+        echo $SUBMIT_LOG
+        echo $SUBMIT_LOG | grep -q "That's the right answer!"
       '';
       after = [ "aoc2024:compile" ];
     };
