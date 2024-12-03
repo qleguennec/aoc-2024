@@ -1,6 +1,7 @@
 module Main where
 
 import Control.Monad
+import Data.Functor
 import Data.List as L
 import Data.Map.Lazy (Map)
 import qualified Data.Map.Lazy as M
@@ -8,8 +9,13 @@ import Data.Maybe
 import Lib
 import Text.Parsec
 
-parser :: Parsec String Int [[Int]]
-parser = sepEndBy1 (sepBy1 digits' spaces') newline
+parser :: Parsec String Int [(Int, Int)]
+parser =
+  catMaybes
+    <$> many1
+      ( try ((string "mul" >> char '(' >> liftA2 (,) (digits' <* char ',') digits' <* char ')') <&> Just)
+          <|> (anyChar $> Nothing)
+      )
 
 main :: IO ()
 main = do
@@ -18,9 +24,4 @@ main = do
     Left err -> print err
     Right r -> print $ run r
       where
-        run = length . filter (ap (liftA2 (||)) (. reverse) $ safe [])
-        safe seen (x : y : xs)
-          | increasing (y - x) = safe (seen ++ [x]) (y : xs)
-          | otherwise = liftA2 (||) ($ x) ($ y) $ all increasing . pad (flip (-)) . (seen ++) . (: xs)
-        safe _ _ = True
-        increasing = (&&) <$> (>= 1) <*> (<= 3)
+        run = sum . map (uncurry (*))

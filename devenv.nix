@@ -7,8 +7,8 @@
 }:
 
 {
-  env.AOC_DAY = "2";
-  env.AOC_PART = "2";
+  env.AOC_DAY = "3";
+  env.AOC_PART = "1";
 
   packages = with pkgs; [
     git
