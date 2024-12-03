@@ -9,18 +9,23 @@ import Data.Maybe
 import Lib
 import Text.Parsec
 
-parser :: Parsec String Int [(Int, Int)]
+parser :: Parsec String Bool [(Int, Int)]
 parser =
   catMaybes
     <$> many1
-      ( try ((string "mul" >> char '(' >> liftA2 (,) (digits' <* char ',') digits' <* char ')') <&> Just)
+      ( ( getState
+            >>= guard
+            >> pure <$> try (string "mul" >> char '(' >> liftA2 (,) (digits' <* char ',') digits' <* char ')')
+        )
+          <|> try (string "do()" >> putState True $> Nothing)
+          <|> try (string "don't()" >> putState False $> Nothing)
           <|> (anyChar $> Nothing)
       )
 
 main :: IO ()
 main = do
   input <- readFile "input"
-  case runParser parser 0 "input" input of
+  case runParser parser True "input" input of
     Left err -> print err
     Right r -> print $ run r
       where
