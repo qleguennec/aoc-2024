@@ -5,6 +5,7 @@ module Lib
     pad,
     if',
     v2m,
+    p2l,
   )
 where
 
@@ -32,3 +33,6 @@ if' p a b = if p then a else b
 
 v2m :: [[a]] -> Map (V2 Int) a
 v2m = M.fromList . concat . zipWith (\y -> map (\(x, c) -> (V2 x y, c))) [0 ..] . map (zip [0 ..])
+
+p2l :: (a, a) -> [a]
+p2l (x, y) = [x, y]
