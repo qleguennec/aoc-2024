@@ -7,8 +7,8 @@
 }:
 
 {
-  env.AOC_DAY = "3";
-  env.AOC_PART = "2";
+  env.AOC_DAY = "4";
+  env.AOC_PART = "1";
 
   packages = with pkgs; [
     git
@@ -16,18 +16,20 @@
     aoc-cli
     ghcid
     ormolu
-
-    (ghc.withPackages (
-      p: with p; [
-        parsec
-        containers
-      ]
-    ))
   ];
 
   dotenv.enable = true;
 
   languages.haskell.enable = true;
+  languages.haskell.package = (
+    pkgs.ghc.withPackages (
+      p: with p; [
+        parsec
+        containers
+        linear
+      ]
+    )
+  );
 
   processes = {
     "aoc2024:download".exec = "aoc download --day $AOC_DAY --overwrite";
