@@ -14,17 +14,23 @@ import Lib
 import Linear.V2
 import Text.Parsec
 
-parser :: Parsec String Bool [[Char]]
-parser = sepEndBy1 (many1 (noneOf ['\n'])) newline
+parser :: Parsec String Bool ([(Int, Int)], [[Int]])
+parser = do
+  rules <- many1 ((,) <$> (digits' <* char '|') <*> (digits' <* newline))
+  newline
+  pages <- sepEndBy1 (sepBy1 digits' (char ',')) newline
+  pure (rules, pages)
+
+respect :: (Int, Int) -> [Int] -> Bool
+respect rule = (`L.isSubsequenceOf` p2l rule) . filter (`S.member` p2s rule)
 
 main :: IO ()
 main = do
   input <- readFile "input"
   case runParser parser True "input" input of
     Left err -> print err
-    Right r -> print $ run r
+
+    Right (rules, pages) -> print run
       where
-        run = length . filter (== S.fromList (replicate 2 (S.fromList ['S', 'M']))) . map gets . M.keys . M.filter (== 'A') . v2m
-        m = v2m r
-        gets x = S.fromList $ S.fromList . catMaybes . p2l . ap (curry $ join bimap (get . (+ x))) negate <$> [V2 1 1, V2 1 (-1)]
-        get = flip M.lookup m
+        run = sum . map middle . filter respectAll $ pages
+        respectAll = flip all rules . flip respect

@@ -6,6 +6,9 @@ module Lib
     if',
     v2m,
     p2l,
+    l2s,
+    p2s,
+    middle,
   )
 where
 
@@ -13,6 +16,8 @@ import Control.Monad
 import qualified Data.List as L
 import Data.Map.Lazy (Map)
 import qualified Data.Map.Lazy as M
+import Data.Set (Set)
+import qualified Data.Set as S
 import Linear.V2
 import Text.Parsec
 
@@ -36,3 +41,12 @@ v2m = M.fromList . concat . zipWith (\y -> map (\(x, c) -> (V2 x y, c))) [0 ..] 
 
 p2l :: (a, a) -> [a]
 p2l (x, y) = [x, y]
+
+l2s :: (Ord a) => [a] -> Set a
+l2s = S.fromList
+
+p2s :: (Ord a) => (a, a) -> Set a
+p2s = l2s . p2l
+
+middle :: [a] -> a
+middle = ap (!!) $ pred . (`div` 2) . succ . length
