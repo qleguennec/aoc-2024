@@ -1,2 +1,2 @@
-:set -Wno-unused-do-bind -Wno-unused-imports -Wno-unused-local-binds
+:set -Wno-unused-do-bind -Wno-unused-imports -Wno-unused-local-binds -Wno-unused-matches
 :set -isrc
